@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+# Configuration part
+BASH_HOME="$HOME/.bash"
+DIR="$(cd "$(dirname "$0")" && pwd)"
+CSV_TEST_FILE=${DIR}/translations.csv
+REQUEST_TYPE="POST"
+
+# Load colors
+[[ -s ${BASH_HOME}/.bash_colors ]] && source "${BASH_HOME}/.bash_colors"
+
+row=-1
+while IFS=, read -r text source_lang target_lang expected_status; do
+
+  ((row += 1))
+
+  if [ "${row}" -eq 0 ]; then # Pass header
+    continue
+  fi
+
+  json_request=$(
+    cat <<EOF
+  {
+    "text": "${text}",
+    "source_lang": "${source_lang}",
+    "target_lang": "${target_lang}"
+  }
+EOF
+  )
+
+  response=$(
+    curl -s \
+      --header "Content-Type: application/json" \
+      --request "${REQUEST_TYPE}" \
+      --data "${json_request}" \
+      http://127.0.0.1:8000/translate
+  )
+
+  # Retrieve http code
+  http_code=$(echo "$response" | sed -n 's/.*"status":[[:space:]]*\([0-9]\+\).*/\1/p')
+
+  [[ "${http_code}" = "${expected_status}" ]] &&
+    echo -e "${GREEN}[INFO]${RESET} $(date "+%T") Test ${row} PASSED!" ||
+    echo -e "${RED}[ERROR]${RESET} $(date "+%T") Test ${row} FAILED! -- expected_status: ${expected_status} result_status: ${http_code}"
+
+done <"${CSV_TEST_FILE}"
+
+echo -e "${BLUE}[INFO]${RESET} ${row} Test(s) completed!"
