@@ -9,11 +9,15 @@ License: GPL3.0
 Version: 0.1
 """
 
+from concurrent.futures import ThreadPoolExecutor
+from itertools import repeat
 from deep_translator import GoogleTranslator
-from models.translation import Translation
+from app.models.translation import Translation
 
 
 class TextTranlator:
+    _THREAD_NUMBER: int = 5
+
     @staticmethod
     def __split_text(text: str, max_length: int = 4000) -> list:
         """
@@ -39,6 +43,10 @@ class TextTranlator:
         return chunks
 
     @staticmethod
+    def __translate_chunk(translator: GoogleTranslator, chunk: str) -> str:
+        return translator.translate(chunk)
+
+    @staticmethod
     def translate(translation: Translation) -> str:
         chunks = TextTranlator.__split_text(translation.text)
 
@@ -49,7 +57,11 @@ class TextTranlator:
         )
 
         # Translate each chunk
-        for chunk in chunks:
-            translated_chunks.append(translator.translate(chunk))
+        with ThreadPoolExecutor(max_workers=TextTranlator._THREAD_NUMBER) as executor:
+            translated_chunks = list(
+                executor.map(
+                    TextTranlator.__translate_chunk, repeat(translator), chunks
+                )
+            )
 
         return "".join(translated_chunks)

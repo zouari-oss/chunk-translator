@@ -3,7 +3,7 @@
 # Configuration part
 BASH_HOME="$HOME/.bash"
 DIR="$(cd "$(dirname "$0")" && pwd)"
-CSV_TEST_FILE=${DIR}/translations.csv
+CSV_TEST_FILE=${DIR}/data/translations.csv
 REQUEST_TYPE="POST"
 
 # Load colors
@@ -30,9 +30,9 @@ EOF
 
   response=$(
     curl -s \
-      --header "Content-Type: application/json" \
-      --request "${REQUEST_TYPE}" \
-      --data "${json_request}" \
+      -H "Content-Type: application/json" \
+      -X "${REQUEST_TYPE}" \
+      -d "${json_request}" \
       http://127.0.0.1:8000/translate
   )
 

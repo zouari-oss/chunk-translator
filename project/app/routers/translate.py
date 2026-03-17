@@ -10,8 +10,8 @@ Version: 0.1
 """
 
 from fastapi import APIRouter, status
-from models.translation import Translation
-from services.text_translator import TextTranlator
+from app.models.translation import Translation
+from app.services.text_translator import TextTranlator
 
 router = APIRouter()
 

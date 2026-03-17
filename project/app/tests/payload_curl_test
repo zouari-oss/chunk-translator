@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# Configuration part
+BASH_HOME="$HOME/.bash"
+DIR="$(cd "$(dirname "$0")" && pwd)"
+PAYLOAD_TEST_FILE=${DIR}/data/fr_payload.json
+
+# Load colors
+[[ -s ${BASH_HOME}/.bash_colors ]] && source "${BASH_HOME}/.bash_colors"
+
+response=$(
+  curl -s \
+    -H "Content-Type: application/json" \
+    --data-binary @"${PAYLOAD_TEST_FILE}" \
+    http://127.0.0.1:8000/translate
+)
+
+# Retrieve http code
+http_code=$(echo "$response" | sed -n 's/.*"status":[[:space:]]*\([0-9]\+\).*/\1/p')
+
+[[ "${http_code}" = 200 ]] &&
+  echo -e "${GREEN}[INFO]${RESET} $(date "+%T") Test PASSED!" ||
+  echo -e "${RED}[ERROR]${RESET} $(date "+%T") Test FAILED! -- expected_status: 200 result_status: ${http_code}"
+
+echo -e "${BLUE}[INFO]${RESET} Test(s) completed!"

@@ -1,6 +1,6 @@
-from core.config import settings
+from app.core.config import settings
 from fastapi import FastAPI
-from routers import translate
+from app.routers import translate
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
