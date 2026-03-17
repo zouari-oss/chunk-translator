@@ -75,7 +75,7 @@ pip install -r requirements.txt
 fastapi run
 ```
 
-### 3. Use `/translate` (GitHub-friendly tabs)
+### 3. Use `/translate`
 
 <details open>
 <summary><strong>curl</strong></summary>
