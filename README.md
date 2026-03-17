@@ -22,7 +22,7 @@
 <p align="center">
   <a href="#overview">Overview</a> •
   <a href="#key-features">Key Features</a> •
-  <a href="#how-to-use">How to Use</a> •
+  <a href="#usage">Usage</a> •
   <a href="#emailware">Emailware</a> •
   <a href="#license">License</a> •
   <a href="#contact">Contact</a> •
@@ -61,7 +61,7 @@ Many translation models or APIs fail when processing very large inputs. This pro
 - **Simple JSON API interface**
 - **Easy to integrate into pipelines**
 
-## How to Use
+## Usage
 
 ### 1. Install dependencies
 
@@ -75,19 +75,139 @@ pip install -r requirements.txt
 fastapi run
 ```
 
-### 3. Example Request
+### 3. Use `/translate` (GitHub-friendly tabs)
+
+<details open>
+<summary><strong>curl</strong></summary>
 
 ```bash
-POST /translate
+curl -s \
+  --header "Content-Type: application/json" \
+  --request "POST" \
+  --data '{
+    "text": "Hello world",
+    "source_lang": "en",
+    "target_lang": "fr"
+  }' \
+  http://127.0.0.1:8000/translate
 ```
 
-```JSON
-{
-  "text": "Large source text here...",
-  "source_lang": "en",
-  "target_lang": "fr"
+</details>
+
+<details>
+<summary><strong>JavaScript (js)</strong></summary>
+
+```js
+const response = await fetch("http://127.0.0.1:8000/translate", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    text: "Hello world",
+    source_lang: "en",
+    target_lang: "fr",
+  }),
+});
+
+const data = await response.json();
+console.log(data);
+```
+
+</details>
+
+<details>
+<summary><strong>Java</strong></summary>
+
+```java
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class TranslateClient {
+    public static void main(String[] args) throws Exception {
+        HttpClient client = HttpClient.newHttpClient();
+        String json = """
+            {
+              "text": "Hello world",
+              "source_lang": "en",
+              "target_lang": "fr"
+            }
+            """;
+
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://127.0.0.1:8000/translate"))
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(json))
+            .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println(response.body());
+    }
 }
 ```
+
+</details>
+
+<details>
+<summary><strong>C</strong></summary>
+
+```c
+#include <curl/curl.h>
+
+int main(void) {
+  CURL *curl = curl_easy_init();
+  if (!curl) return 1;
+
+  const char *json =
+    "{\"text\":\"Hello world\",\"source_lang\":\"en\",\"target_lang\":\"fr\"}";
+
+  struct curl_slist *headers = NULL;
+  headers = curl_slist_append(headers, "Content-Type: application/json");
+
+  curl_easy_setopt(curl, CURLOPT_URL, "http://127.0.0.1:8000/translate");
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json);
+  curl_easy_setopt(curl, CURLOPT_POST, 1L);
+  curl_easy_perform(curl);
+
+  curl_slist_free_all(headers);
+  curl_easy_cleanup(curl);
+  return 0;
+}
+```
+
+</details>
+
+<details>
+<summary><strong>C++ (cpp)</strong></summary>
+
+```cpp
+#include <curl/curl.h>
+#include <string>
+
+int main() {
+  CURL* curl = curl_easy_init();
+  if (!curl) return 1;
+
+  std::string json =
+    R"({"text":"Hello world","source_lang":"en","target_lang":"fr"})";
+
+  struct curl_slist* headers = nullptr;
+  headers = curl_slist_append(headers, "Content-Type: application/json");
+
+  curl_easy_setopt(curl, CURLOPT_URL, "http://127.0.0.1:8000/translate");
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json.c_str());
+  curl_easy_setopt(curl, CURLOPT_POST, 1L);
+  curl_easy_perform(curl);
+
+  curl_slist_free_all(headers);
+  curl_easy_cleanup(curl);
+  return 0;
+}
+```
+
+</details>
 
 ### 4. Example Response
 
